@@ -1,0 +1,18 @@
+# IntelliJ IDEA
+.idea/workspace.xml
+.idea/libraries
+.idea/codeStyles
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# Kotlin
+*.class
+*.log
+
+# Mac OS
+.DS_Store
+
+# Package Files
+*.jar
+!lib/*.jar  # Keep JUnit jars in lib directory

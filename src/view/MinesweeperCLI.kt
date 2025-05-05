@@ -1,0 +1,137 @@
+import model.GameState
+import model.Position
+import model.SquareState
+import viewmodel.MinesweeperViewModel
+
+class MinesweeperCLI() {
+    lateinit var viewModel: MinesweeperViewModel
+
+    private fun startGame() {
+        println("Welcome to Minesweeper!")
+
+        while (true) {
+            // Prompt the user for grid size and mine count
+            val size = promptGridSize()
+            val mines = promptMineCount()
+
+            try {
+                viewModel = MinesweeperViewModel(size, mines)
+                playGame(viewModel)
+
+                // Allow the user to play again after the game ends
+                println("Press any key to play again...")
+                readLine()
+
+            } catch (e: IllegalArgumentException) {
+                // Handle invalid input for grid size or mine count
+                println(e.message)
+            }
+        }
+    }
+
+    private fun promptGridSize(): Int {
+        while (true) {
+            println("\nEnter the size of the grid (e.g. 4 for a 4x4 grid): ")
+            val size = readLine()?.toIntOrNull() ?: continue
+            return size
+        }
+    }
+
+    private fun promptMineCount(): Int {
+        while (true) {
+            println("Enter the number of mines to place on the grid (maximum is 35% of the total squares): ")
+            val mines = readLine()?.toIntOrNull() ?: continue
+            return mines
+        }
+    }
+
+    private fun playGame(viewModel: MinesweeperViewModel) {
+        var isFirstTimeDisplay = true
+        val size = viewModel.getBoardSize()
+
+        while (viewModel.isGamePlaying()) { // Continue the game loop while the game is active
+            // Display "updated" only after the first time the grid is shown
+            val updated = if (isFirstTimeDisplay) "" else " updated"
+            isFirstTimeDisplay = false
+
+            displayMinefield(updated)
+
+            print("Select a square to reveal (e.g. A1): ")
+            val input = readLine()?.uppercase() ?: continue
+
+            // Ensure the input has at least two characters (e.g., A1)
+            if (input.length < 2) continue
+
+            val row = input[0] - 'A'
+            val col = input.substring(1).toIntOrNull()?.minus(1) ?: continue
+
+            if (row !in 0 until size || col !in 0 until size) {
+                println("Invalid input! Please try again.")
+                continue
+            }
+
+            val position = Position(row, col)
+            val moveResult = viewModel.revealSquare(position)
+
+            if (moveResult) {
+                val adjacentMines = viewModel.getSquareAdjacentMines(position)
+                println("This square contains $adjacentMines adjacent mines.")
+            }
+
+            displayFinalResult(updated) {
+                return@displayFinalResult
+            }
+        }
+    }
+
+    private fun displayFinalResult(updated: String, elseAction: () -> Unit) {
+        when (viewModel.getGameState()) {
+            GameState.LOST -> println("Oh no, you detonated a mine! Game over.")
+            GameState.WON -> {
+                displayMinefield(updated)
+                println("Congratulations, you have won the game!")
+            }
+
+            else -> elseAction()
+        }
+    }
+
+    private fun displayMinefield(updated: String) {
+        println("\nHere is your${updated} minefield:")
+        displayGrid()
+    }
+
+    private fun displayGrid() {
+        val sb = StringBuilder()
+        val size = viewModel.getBoardSize()
+        // Add column headers (e.g., 1 2 3 ...)
+        sb.append("  ")
+        for (i in 1..size) {
+            sb.append("$i ")
+        }
+        sb.append("\n")
+
+        // Add rows with their corresponding letters and square states
+        for (row in 0 until size) {
+            sb.append("${('A' + row)} ") // Row label (e.g., A, B, C...)
+            for (column in 0 until size) {
+                val square = viewModel.getSquare(row, column)
+                val symbol = when {
+                    square.state == SquareState.HIDDEN -> "_"
+                    else -> square.adjacentMines.toString()
+                }
+                sb.append("$symbol ")
+            }
+            sb.append("\n")
+        }
+        println(sb.toString())
+    }
+
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val minesweeperCLI = MinesweeperCLI()
+            minesweeperCLI.startGame()
+        }
+    }
+}
