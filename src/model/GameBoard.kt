@@ -21,15 +21,12 @@ class GameBoard(
     }
 
     init {
-        require(isValidGridSize(size)) { "Grid size must be between 1 and $MAX_GRID_SIZE" }
         require(isValidNumberOfMines(numberOfMines)) {
             "Number of mines must be between 1 and 35% of total squares"
         }
         mineManagerImpl.placeMines(grid)
         mineManagerImpl.calculateAdjacentMines(grid)
     }
-
-    private fun isValidGridSize(size: Int) = size in 1..MAX_GRID_SIZE
 
     private fun isValidNumberOfMines(numberOfMines: Int) = numberOfMines in 1..mineManagerImpl.getMaxMines()
 
@@ -73,8 +70,4 @@ class GameBoard(
     fun getSquareAdjacentMines(position: Position): Int = grid[position.row][position.col].adjacentMines
 
     fun getSquare(row: Int, column: Int): Square = grid[row][column]
-
-    companion object {
-        const val MAX_GRID_SIZE = 30  // Define a maximum grid size limit to prevent potential memory issues and ensure the game remains playable
-    }
 }

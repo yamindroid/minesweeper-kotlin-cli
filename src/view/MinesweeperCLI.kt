@@ -33,9 +33,15 @@ class MinesweeperCLI() {
         while (true) {
             println("\nEnter the size of the grid (e.g. 4 for a 4x4 grid): ")
             val size = readLine()?.toIntOrNull() ?: continue
+            if (!isValidGridSize(size)) {
+                println("Grid size must be between 1 and $MAX_GRID_SIZE")
+                continue
+            }
             return size
         }
     }
+
+    private fun isValidGridSize(size: Int) = size in 1..MAX_GRID_SIZE
 
     private fun promptMineCount(): Int {
         while (true) {
@@ -75,9 +81,9 @@ class MinesweeperCLI() {
             }
 
             val position = Position(row, col)
-            val moveResult = viewModel.revealSquare(position)
+            val isSquareRevealed = viewModel.revealSquare(position)
 
-            if (moveResult) {
+            if (isSquareRevealed) {
                 val adjacentMines = viewModel.getSquareAdjacentMines(position)
                 println("This square contains $adjacentMines adjacent mines.")
             }
@@ -132,6 +138,8 @@ class MinesweeperCLI() {
     }
 
     companion object {
+        const val MAX_GRID_SIZE = 10
+
         @JvmStatic
         fun main(args: Array<String>) {
             val minesweeperCLI = MinesweeperCLI()
