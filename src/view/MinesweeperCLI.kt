@@ -59,8 +59,12 @@ class MinesweeperCLI() {
             print("Select a square to reveal (e.g. A1): ")
             val input = readLine()?.uppercase() ?: continue
 
-            // Ensure the input has at least two characters (e.g., A1)
-            if (input.length < 2) continue
+            // Validate that the input follows the format of a letter followed by one or two digits (e.g., A1)
+            val regex = Regex("^[A-Za-z][0-9]{1,2}\$")
+            if (!regex.matches(input)) {
+                println("Invalid input! Please use a format like A1 (letter + number).")
+                continue
+            }
 
             val row = input[0] - 'A'
             val col = input.substring(1).toIntOrNull()?.minus(1) ?: continue
