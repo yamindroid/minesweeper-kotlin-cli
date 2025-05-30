@@ -32,7 +32,7 @@ The project follows SOLID principles and clean architecture:
 4. **Clean Code**: Small, focused classes with clear naming
 
 Key Features:
-- Grid size limit of 30x30 for optimal playability
+- Grid size limited to 10x10 for optimal playability
 - Mine count limited to 35% of total squares
 - Recursive revealing of empty squares
 - Comprehensive test coverage
@@ -65,7 +65,7 @@ Key Features:
 
 ## Game Rules
 
-1. Enter grid size (1-30) and number of mines
+1. Enter grid size (1-10) and number of mines
 2. Select squares using coordinates (e.g., A1)
 3. Numbers show adjacent mines
 4. Empty squares auto-reveal adjacent squares
@@ -74,7 +74,7 @@ Key Features:
 
 ## Game play
 
-### Sucess example
+### Success example
 ```
 Welcome to Minesweeper!
 
